@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - TaskBuddy</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #ffd1e8, #f7a8c9);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================= NAVIGATION BAR ================= */
+    nav {
+      background: linear-gradient(135deg, #ff69b4, #ff85c1);
+      padding: 15px 0;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 0 20px;
+      gap: 40px;
+    }
+
+    .nav-brand {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-brand:hover {
+      transform: scale(1.05);
+      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex: 1;
+    }
+
+    .nav-link {
+      color: #fff !important;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ================= NOTIFICATION BELL ================= */
+    .notification {
+      position: relative;
+      cursor: pointer;
+      color: #fff;
+      font-size: 20px;
+      padding: 10px;
+    }
+
+    .notification .badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: #dc3545;
+      color: white;
+      border-radius: 50%;
+      padding: 3px 7px;
+      font-size: 11px;
+      font-weight: bold;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .dropdown-menu {
+      min-width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+
+    .dropdown-item {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      white-space: normal;
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item strong {
+      color: #ff69b4;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    /* ================= MAIN CONTENT ================= */
+    .main-content {
+      flex: 1;
+      margin-top: 80px;
+      padding: 30px 15px;
+    }
+
+    .about-container {
+      max-width: 1100px;
+      background: linear-gradient(135deg, #f7cde5, #e6b7d6);
+      border-radius: 30px;
+      padding: 50px;
+      margin: 0 auto 40px;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.25);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      letter-spacing: 4px;
+      font-weight: 300;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: #555;
+      line-height: 1.8;
+    }
+
+    /* ================= ABOUT SECTION ================= */
+    .about-section {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+
+    .about-section h2 {
+      color: #ff69b4;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+
+    .about-section p {
+      color: #555;
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .feature-card {
+      background: linear-gradient(135deg, #ffe1f0, #ffd0e8);
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(255, 105, 180, 0.3);
+    }
+
+    .feature-card i {
+      font-size: 3rem;
+      color: #ff69b4;
+      margin-bottom: 15px;
+    }
+
+    .feature-card h3 {
+      color: #ff69b4;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .feature-card p {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ================= GALLERY SECTION ================= */
+    .gallery-section {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+
+    .gallery-section h2 {
+      color: #ff69b4;
+      font-size: 1.8rem;
+      margin-bottom: 30px;
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .gallery-item {
+      position: relative;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      aspect-ratio: 4/3;
+    }
+
+    .gallery-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 30px rgba(255, 105, 180, 0.4);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gallery-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(255, 105, 180, 0.9), transparent);
+      padding: 20px;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover .gallery-overlay {
+      transform: translateY(0);
+    }
+
+    .gallery-overlay h3 {
+      color: white;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .gallery-overlay p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.85rem;
+    }
+
+    /* Placeholder for images without src */
+    .gallery-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ff69b4, #ff85c1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
+    }
+
+    /* ================= FOOTER ================= */
+    footer {
+      background: linear-gradient(135deg, #ff69b4, #ff85c1);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: auto;
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+    }
+
+    footer p {
+      margin: 5px 0;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    footer a {
+      color: white;
+      text-decoration: underline;
+      transition: opacity 0.3s ease;
+    }
+
+    footer a:hover {
+      opacity: 0.8;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .about-container {
+        padding: 30px 20px;
+        border-radius: 20px;
+      }
+
+      header h1 {
+        font-size: 2rem;
+        letter-spacing: 2px;
+      }
+
+      .nav-container {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .nav-brand {
+        font-size: 1.2rem;
+      }
+
+      .nav-links {
+        order: 2;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 3px;
+      }
+
+      .nav-link {
+        font-size: 12px;
+        padding: 8px 12px;
+      }
+
+      .notification {
+        order: 1;
+      }
+
+      .about-section,
+      .gallery-section {
+        padding: 25px;
+      }
+
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-container">
+    <!-- BRAND NAME -->
+    <a href="HomePage.html" class="nav-brand">TaskBuddy</a>
+
+    <!-- NAVIGATION LINKS -->
+    <div class="nav-links">
+      <a href="HomePage.html" class="nav-link">Home</a>
+      <a href="assignmentmanager.html" class="nav-link">Assignments</a>
+      <a href="studyPage.html" class="nav-link">Study Session</a>
+      <a href="RevisionLog.html" class="nav-link">Revision Log</a>
+      <a href="aboutus.html" class="nav-link active">About Us</a>
+    </div>
+
+    <!-- BELL ICON with Bootstrap Dropdown -->
+    <div class="notification dropdown">
+      <i class="fa-solid fa-bell" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false"></i>
+      <span class="badge" id="notification-count">0</span>
+      
+      <ul class="dropdown-menu dropdown-menu-end" id="notification-dropdown">
+        <li class="dropdown-item-text text-center fw-bold" style="color: #ff69b4;">
+          <i class="fas fa-bell"></i> Notifications
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li id="notification-list">
+          <div class="dropdown-item text-center text-muted">No upcoming deadlines</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <div class="about-container">
+    <header>
+      <h1>ABOUT TASKBUDDY</h1>
+      <p>Your ultimate companion for academic success and productivity</p>
+    </header>
+
+    <!-- About Section -->
+    <div class="about-section">
+      <h2><i class="fas fa-info-circle"></i> Who We Are</h2>
+      <p>
+        TaskBuddy is a comprehensive study management platform designed to help students stay organized, 
+        focused, and motivated throughout their academic journey. We understand the challenges students 
+        face in managing multiple assignments, study sessions, and deadlines.
+      </p>
+      <p>
+        Our mission is to provide an intuitive, all-in-one solution that empowers students to take control 
+        of their learning experience. Whether you're tracking assignments, logging study hours, or reviewing 
+        your progress, TaskBuddy is here to support you every step of the way.
+      </p>
+      <p>
+        Check us out on Instagram: 
+        <a href="https://www.instagram.com/TaskBuddy" target="_blank">
+            TaskBuddy
+        </a>
+        </p>
+
+
+      <!-- Features Grid -->
+      <div class="features-grid">
+        <div class="feature-card">
+          <i class="fas fa-tasks"></i>
+          <h3>Assignment Manager</h3>
+          <p>Keep track of all your assignments with deadlines and priority levels</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-clock"></i>
+          <h3>Study Timer</h3>
+          <p>Track your study sessions and build consistent learning habits</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-book"></i>
+          <h3>Revision Log</h3>
+          <p>Review your study history and monitor your academic progress</p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+
+<!-- FOOTER -->
+<footer>
+  <p>Give us your feedback <a href="mailto:eashenraj256@gmail.com">here!</a></p>
+  <p>&copy; 2026 Study Dashboard. All rights reserved.</p>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<!-- JAVASCRIPT -->
+<script>
+  // Load notifications
+  function loadNotifications() {
+    const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+    const notificationList = document.getElementById('notification-list');
+    const notificationCount = document.getElementById('notification-count');
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const upcoming = assignments.filter(a => {
+      if (a.status !== 'pending' && a.status !== 'overdue') return false;
+      const dueDate = new Date(a.dueDate);
+      dueDate.setHours(0, 0, 0, 0);
+      const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+      return daysUntilDue <= 7 && daysUntilDue >= 0;
+    }).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    
+    if (upcoming.length > 0) {
+      notificationCount.textContent = upcoming.length;
+      notificationCount.style.display = 'block';
+      
+      notificationList.innerHTML = upcoming.map(assignment => {
+        const dueDate = new Date(assignment.dueDate);
+        const formattedDate = dueDate.toLocaleDateString('en-GB');
+        const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+        
+        let urgencyText = '';
+        if (daysUntilDue === 0) urgencyText = 'Due Today!';
+        else if (daysUntilDue === 1) urgencyText = 'Due Tomorrow';
+        else urgencyText = `Due in ${daysUntilDue} days`;
+        
+        return `
+          <div class="dropdown-item">
+            <strong>${assignment.name}</strong><br>
+            <small>${assignment.subject}</small><br>
+            <small class="text-danger"><i class="fas fa-calendar"></i> ${urgencyText} - ${formattedDate}</small>
+          </div>
+        `;
+      }).join('');
+    } else {
+      notificationCount.style.display = 'none';
+      notificationList.innerHTML = '<div class="dropdown-item text-center text-muted">No upcoming deadlines</div>';
+    }
+  }
+
+  // Initialize
+  loadNotifications();
+
+  // Refresh notifications every 60 seconds
+  setInterval(loadNotifications, 60000);
+</script>
+
+</body>
+</html>

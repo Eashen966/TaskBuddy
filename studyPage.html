@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Session - Study Dashboard</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="studyStyle.css">
+</head>
+
+<body>
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-container">
+    <!-- BRAND NAME -->
+    <a href="HomePage.html" class="nav-brand">TaskBuddy</a>
+
+    <!-- NAVIGATION LINKS -->
+    <div class="nav-links">
+      <a href="HomePage.html" class="nav-link">Home</a>
+      <a href="assignmentmanager.html" class="nav-link">Assignments</a>
+      <a href="studyPage.html" class="nav-link">Study Session</a>
+      <a href="RevisionLog.html" class="nav-link">Revision Log</a>
+      <a href="aboutus.html" class="nav-link">About Us</a>
+    </div>
+
+    <!-- BELL ICON with Bootstrap Dropdown -->
+    <div class="notification dropdown">
+      <i class="fa-solid fa-bell" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false"></i>
+      <span class="badge" id="notification-count">0</span>
+      
+      <ul class="dropdown-menu dropdown-menu-end" id="notification-dropdown">
+        <li class="dropdown-item-text text-center fw-bold" style="color: #ff69b4;">
+          <i class="fas fa-bell"></i> Notifications
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li id="notification-list">
+          <div class="dropdown-item text-center text-muted">No upcoming deadlines</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <div class="study-container">
+    <header>
+      <h1>STUDY SESSION</h1>
+      <p>Start a focused study session and track your progress.</p>
+    </header>
+
+    <!-- FORM SECTION -->
+    <div class="form-section">
+      <div class="form-group">
+        <label><i class="fas fa-book"></i> Subject</label>
+        <input list="subjects" id="subject" placeholder="Select or type subject">
+        <datalist id="subjects">
+          <option value="Web Design">
+          <option value="Database Systems">
+          <option value="Java Programming">
+        </datalist>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-bookmark"></i> Chapter</label>
+        <input type="text" id="chapter" placeholder="Enter chapter name or topic">
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-comment"></i> Remarks (Optional)</label>
+        <textarea id="remarks" placeholder="Add any notes or comments about this study session..."></textarea>
+      </div>
+    </div>
+
+    <!-- TIMER SECTION -->
+    <div class="timer-section">
+      <div class="timer-status" id="timer-status">Ready to start</div>
+      <div class="timer-display" id="timer">00:00:00</div>
+      
+      <div class="button-group">
+        <button class="btn-custom btn-start" id="btn-start" onclick="startTimer()">
+          <i class="fas fa-play"></i> Start
+        </button>
+        <button class="btn-custom btn-stop" id="btn-stop" onclick="stopTimer()" disabled>
+          <i class="fas fa-save"></i> Stop & Save
+        </button>
+        <button class="btn-custom btn-reset" id="btn-reset" onclick="resetTimer()">
+          <i class="fas fa-redo"></i> Reset
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    Give us your feedback
+    <a href="mailto:eashenraj256@gmail.com">here!</a>
+  </p>
+  <p>&copy; 2026 Study Dashboard. All rights reserved.</p>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<!-- JAVASCRIPT -->
+<script>
+let seconds = 0;
+let interval = null;
+
+// Load notifications
+function loadNotifications() {
+  const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+  const notificationList = document.getElementById('notification-list');
+  const notificationCount = document.getElementById('notification-count');
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const upcoming = assignments.filter(a => {
+    if (a.status !== 'pending' && a.status !== 'overdue') return false;
+    const dueDate = new Date(a.dueDate);
+    dueDate.setHours(0, 0, 0, 0);
+    const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+    return daysUntilDue <= 7 && daysUntilDue >= 0;
+  }).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+  
+  if (upcoming.length > 0) {
+    notificationCount.textContent = upcoming.length;
+    notificationCount.style.display = 'block';
+    
+    notificationList.innerHTML = upcoming.map(assignment => {
+      const dueDate = new Date(assignment.dueDate);
+      const formattedDate = dueDate.toLocaleDateString('en-GB');
+      const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+      
+      let urgencyText = '';
+      if (daysUntilDue === 0) urgencyText = 'Due Today!';
+      else if (daysUntilDue === 1) urgencyText = 'Due Tomorrow';
+      else urgencyText = `Due in ${daysUntilDue} days`;
+      
+      return `
+        <div class="dropdown-item">
+          <strong>${assignment.name}</strong><br>
+          <small>${assignment.subject}</small><br>
+          <small class="text-danger"><i class="fas fa-calendar"></i> ${urgencyText} - ${formattedDate}</small>
+        </div>
+      `;
+    }).join('');
+  } else {
+    notificationCount.style.display = 'none';
+    notificationList.innerHTML = '<div class="dropdown-item text-center text-muted">No upcoming deadlines</div>';
+  }
+}
+
+// Load saved subjects
+window.onload = function () {
+  loadNotifications();
+  
+  let savedSubjects = JSON.parse(localStorage.getItem("subjects")) || [];
+  const datalist = document.getElementById("subjects");
+
+  savedSubjects.forEach(sub => {
+    const option = document.createElement("option");
+    option.value = sub;
+    datalist.appendChild(option);
+  });
+};
+
+// Timer functions
+function startTimer() {
+  if (interval) return;
+  
+  const subject = document.getElementById("subject").value.trim();
+  const chapter = document.getElementById("chapter").value.trim();
+  
+  if (!subject || !chapter) {
+    alert("Please enter both subject and chapter before starting the timer.");
+    return;
+  }
+  
+  interval = setInterval(() => {
+    seconds++;
+    document.getElementById("timer").innerText = formatTime(seconds);
+  }, 1000);
+  
+  document.getElementById("timer-status").innerText = "Session in progress...";
+  document.getElementById("timer-status").classList.add("active");
+  document.getElementById("btn-start").disabled = true;
+  document.getElementById("btn-stop").disabled = false;
+}
+
+function stopTimer() {
+  if (!interval) return;
+  
+  clearInterval(interval);
+  interval = null;
+
+  const subject = document.getElementById("subject").value.trim();
+  const chapter = document.getElementById("chapter").value.trim();
+
+  if (!subject || !chapter) {
+    alert("Please enter subject and chapter");
+    document.getElementById("btn-start").disabled = false;
+    document.getElementById("btn-stop").disabled = true;
+    return;
+  }
+
+  document.getElementById("timer-status").innerText = "Session completed!";
+  document.getElementById("timer-status").classList.remove("active");
+  document.getElementById("btn-start").disabled = true;
+  document.getElementById("btn-stop").disabled = true;
+
+  // Show modal to upload notes
+  showUploadModal(subject, chapter, seconds);
+}
+
+function resetTimer() {
+  if (interval) {
+    if (!confirm("Are you sure you want to reset? Your current session will not be saved.")) {
+      return;
+    }
+    clearInterval(interval);
+    interval = null;
+  }
+  
+  seconds = 0;
+  document.getElementById("timer").innerText = "00:00:00";
+  document.getElementById("timer-status").innerText = "Ready to start";
+  document.getElementById("timer-status").classList.remove("active");
+  document.getElementById("btn-start").disabled = false;
+  document.getElementById("btn-stop").disabled = true;
+}
+
+// Save new subject
+function saveNewSubject(subject) {
+  let subjects = JSON.parse(localStorage.getItem("subjects")) || [];
+  if (!subjects.includes(subject)) {
+    subjects.push(subject);
+    localStorage.setItem("subjects", JSON.stringify(subjects));
+  }
+}
+
+// Format time
+function formatTime(sec) {
+  let h = String(Math.floor(sec / 3600)).padStart(2, '0');
+  let m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+  let s = String(sec % 60).padStart(2, '0');
+  return `${h}:${m}:${s}`;
+}
+
+// Refresh notifications every 60 seconds
+setInterval(loadNotifications, 60000);
+
+// Show upload modal after timer stops
+function showUploadModal(subject, chapter, duration) {
+  const modalOverlay = document.createElement('div');
+  modalOverlay.id = 'upload-modal-overlay';
+  modalOverlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+  `;
+  
+  const modalContent = document.createElement('div');
+  modalContent.style.cssText = `
+    background: linear-gradient(135deg, #f7cde5, #e6b7d6);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.4);
+    animation: slideIn 0.3s ease;
+  `;
+  
+  modalContent.innerHTML = `
+    <h2 style="
+      text-align: center;
+      color: #ff69b4;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+    ">
+      <i class="fas fa-check-circle"></i> Session Completed!
+    </h2>
+    <p style="text-align: center; margin-bottom: 30px; font-size: 1.1rem; color: #333;">
+      Duration: <strong style="color: #ff69b4;">${formatTime(duration)}</strong>
+    </p>
+    <div style="
+      background: rgba(255,255,255,0.9);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+    ">
+      <label style="
+        display: block;
+        font-weight: 600;
+        color: #ff69b4;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+        font-size: 0.95rem;
+      ">
+        <i class="fas fa-file-upload"></i> Upload Study Notes (Optional)
+      </label>
+      <input type="file" id="modal-notes-input" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" style="
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid #ffe1f0;
+        background: white;
+        cursor: pointer;
+      ">
+      <small style="display: block; margin-top: 8px; color: #666; font-size: 0.85rem;">
+        Accepted formats: PDF, DOC, DOCX, TXT, JPG, PNG
+      </small>
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+      <button id="skip-btn" style="
+        padding: 12px 30px;
+        border-radius: 25px;
+        border: none;
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      ">
+        <i class="fas fa-forward"></i> Skip
+      </button>
+      <button id="save-btn" style="
+        padding: 12px 30px;
+        border-radius: 25px;
+        border: none;
+        background: linear-gradient(135deg, #ff69b4, #ff1493);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      ">
+        <i class="fas fa-save"></i> Save Session
+      </button>
+    </div>
+  `;
+  
+  modalOverlay.appendChild(modalContent);
+  document.body.appendChild(modalOverlay);
+  
+  // Add hover effects
+  const skipBtn = modalContent.querySelector('#skip-btn');
+  const saveBtn = modalContent.querySelector('#save-btn');
+  
+  skipBtn.onmouseover = () => skipBtn.style.transform = 'translateY(-2px)';
+  skipBtn.onmouseout = () => skipBtn.style.transform = 'translateY(0)';
+  saveBtn.onmouseover = () => saveBtn.style.transform = 'translateY(-2px)';
+  saveBtn.onmouseout = () => saveBtn.style.transform = 'translateY(0)';
+  
+  // Store session data temporarily
+  window.tempSessionData = { subject, chapter, duration };
+  
+  // Add event listeners
+  skipBtn.addEventListener('click', () => saveSession(false));
+  saveBtn.addEventListener('click', () => saveSession(true));
+}
+
+// Save session with or without notes
+async function saveSession(withNotes) {
+  const { subject, chapter, duration } = window.tempSessionData;
+  const modal = document.getElementById('upload-modal-overlay');
+  
+  let noteData = null;
+  
+  if (withNotes) {
+    const fileInput = document.getElementById('modal-notes-input');
+    const file = fileInput ? fileInput.files[0] : null;
+    
+    if (!file) {
+      // No file selected, ask user what to do
+      const continueWithoutFile = confirm('No file selected. Do you want to save the session without notes?');
+      if (continueWithoutFile) {
+        withNotes = false; // Continue without notes
+      } else {
+        return; // Cancel the save
+      }
+    }
+    
+    if (file) {
+      try {
+        // Show loading state
+        const saveBtn = document.getElementById('save-btn');
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        }
+        
+        // Convert file to base64
+        noteData = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            resolve({
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              data: e.target.result
+            });
+          };
+          reader.onerror = () => reject(new Error('Failed to read file'));
+          reader.readAsDataURL(file);
+        });
+        
+        console.log('File uploaded successfully:', noteData.name);
+      } catch (error) {
+        console.error('Error reading file:', error);
+        alert('Failed to upload file. Please try again or skip to save without notes.');
+        
+        // Re-enable button
+        const saveBtn = document.getElementById('save-btn');
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Session';
+        }
+        return;
+      }
+    }
+  }
+  
+  try {
+    saveNewSubject(subject);
+
+    // Save to studySessions (for compatibility with HomePage and RevisionLog)
+    let sessions = JSON.parse(localStorage.getItem("studySessions")) || [];
+    const sessionId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    const sessionData = {
+      id: sessionId,
+      subject,
+      chapter,
+      duration: Math.floor(duration / 60), // Store in minutes
+      date: new Date().toISOString()
+    };
+    
+    // Add notes if available
+    if (noteData) {
+      sessionData.notes = noteData;
+      console.log('Session saved with notes');
+    } else {
+      console.log('Session saved without notes');
+    }
+    
+    sessions.push(sessionData);
+    localStorage.setItem("studySessions", JSON.stringify(sessions));
+
+    // Close modal
+    if (modal) {
+      modal.remove();
+    }
+    
+    document.getElementById("timer-status").innerText = "Session saved!";
+    document.getElementById("timer-status").classList.remove("active");
+    document.getElementById("btn-start").disabled = false;
+    document.getElementById("btn-stop").disabled = true;
+    
+    const savedMessage = noteData 
+      ? `Study session saved with notes!\nFile: ${noteData.name}\nDuration: ${formatTime(duration)}` 
+      : `Study session saved!\nDuration: ${formatTime(duration)}`;
+    
+    alert(savedMessage);
+    
+    // Reset form
+    document.getElementById("subject").value = "";
+    document.getElementById("chapter").value = "";
+    document.getElementById("remarks").value = "";
+    
+    seconds = 0;
+    document.getElementById("timer").innerText = "00:00:00";
+    document.getElementById("timer-status").innerText = "Ready to start";
+    
+    window.tempSessionData = null;
+  } catch (error) {
+    console.error('Error saving session:', error);
+    alert('Failed to save session. Please try again.');
+    
+    // Close modal on error too
+    if (modal) {
+      modal.remove();
+    }
+  }
+}
+</script>
+
+</body>
+</html>

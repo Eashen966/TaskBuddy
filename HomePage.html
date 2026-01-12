@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Dashboard - Home</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="homeStyle.css">
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-container">
+    <a href="HomePage.html" class="nav-brand">TaskBuddy</a>
+    <!-- NAVIGATION LINKS -->
+    <div class="nav-links">
+      <a href="HomePage.html" class="nav-link">Home</a>
+      <a href="assignmentmanager.html" class="nav-link">Assignments</a>
+      <a href="studyPage.html" class="nav-link">Study Session</a>
+      <a href="RevisionLog.html" class="nav-link">Revision Log</a>
+      <a href="aboutus.html" class="nav-link">About Us</a>
+    </div>
+
+    <!-- BELL ICON with Bootstrap Dropdown -->
+    <div class="notification dropdown">
+      <i class="fa-solid fa-bell" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false"></i>
+      <span class="badge" id="notification-count">0</span>
+      
+      <ul class="dropdown-menu dropdown-menu-end" id="notification-dropdown">
+        <li class="dropdown-item-text text-center fw-bold" style="color: #ff69b4;">
+          <i class="fas fa-bell"></i> Notifications
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li id="notification-list">
+          <div class="dropdown-item text-center text-muted">No upcoming deadlines</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <div class="homepage">
+    <header>
+      <h1>STUDY DASHBOARD</h1>
+      <p>Track your progress. Stay motivated. Learn consistently.</p>
+    </header>
+
+    <section class="dashboard">
+      <div class="card">
+        <h2><i class="fas fa-tasks"></i> UPCOMING TASKS</h2>
+        <ul id="upcoming-tasks">
+          <li class="empty-state">No upcoming assignments</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-check-circle"></i> COMPLETED WORK</h2>
+        <ul id="completed-work">
+          <li class="empty-state">No completed assignments yet</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-clock"></i> RECENT STUDY SESSIONS</h2>
+        <ul id="recent-sessions">
+          <li class="empty-state">No study sessions recorded</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Image Slideshow -->
+    <div class="slideshow-container">
+      <div class="slide">
+        <img src="logo.png" alt="logo">
+      </div>
+      <div class="slide">
+        <img src="study3.png" alt="study image">
+      </div>
+      <div class="slide">
+        <img src="reviews.png" alt="study image">
+      </div>
+      
+      <!-- Navigation dots -->
+      <div class="slideshow-dots">
+        <span class="dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
+      </div>
+    </div>
+
+    <!-- Motivational Quote -->
+    <div class="quote-section">
+      <blockquote id="quote-text">"Success is the sum of small efforts repeated day in and day out."</blockquote>
+      <cite id="quote-author">— Robert Collier</cite>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    Give us your feedback
+    <a href="mailto:eashenraj256@gmail.com">here!</a>
+  </p>
+  <p>&copy; 2026 Study Dashboard. All rights reserved.</p>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<!-- JAVASCRIPT -->
+<script>
+  // ================= SLIDESHOW FUNCTIONALITY =================
+  let slideIndex = 0;
+  let slideTimer;
+
+  function showSlides() {
+    const slides = document.getElementsByClassName("slide");
+    const dots = document.getElementsByClassName("dot");
+    
+    // Hide all slides
+    for (let i = 0; i < slides.length; i++) {
+      slides[i].classList.remove("active");
+    }
+    
+    // Remove active from all dots
+    for (let i = 0; i < dots.length; i++) {
+      dots[i].classList.remove("active");
+    }
+    
+    // Increment index
+    slideIndex++;
+    if (slideIndex > slides.length) {
+      slideIndex = 1;
+    }
+    
+    // Show current slide
+    slides[slideIndex - 1].classList.add("active");
+    dots[slideIndex - 1].classList.add("active");
+    
+    // Change slide every 4 seconds
+    slideTimer = setTimeout(showSlides, 4000);
+  }
+
+  function currentSlide(n) {
+    clearTimeout(slideTimer);
+    slideIndex = n - 1;
+    
+    const slides = document.getElementsByClassName("slide");
+    const dots = document.getElementsByClassName("dot");
+    
+    // Hide all slides
+    for (let i = 0; i < slides.length; i++) {
+      slides[i].classList.remove("active");
+    }
+    
+    // Remove active from all dots
+    for (let i = 0; i < dots.length; i++) {
+      dots[i].classList.remove("active");
+    }
+    
+    // Show selected slide
+    slides[slideIndex].classList.add("active");
+    dots[slideIndex].classList.add("active");
+    
+    // Restart automatic slideshow
+    slideIndex++;
+    if (slideIndex >= slides.length) {
+      slideIndex = 0;
+    }
+    slideTimer = setTimeout(showSlides, 4000);
+  }
+
+  // ================= MOTIVATIONAL QUOTES =================
+  const quotes = [
+    { text: "Success is the sum of small efforts repeated day in and day out.", author: "Robert Collier" },
+    { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+    { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+    { text: "The expert in anything was once a beginner.", author: "Helen Hayes" },
+    { text: "Education is the passport to the future.", author: "Malcolm X" },
+    { text: "Learning is not attained by chance, it must be sought for with ardor.", author: "Abigail Adams" },
+    { text: "The beautiful thing about learning is that no one can take it away from you.", author: "B.B. King" }
+  ];
+
+  // Display random quote
+  function displayRandomQuote() {
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    document.getElementById('quote-text').textContent = `"${randomQuote.text}"`;
+    document.getElementById('quote-author').textContent = `— ${randomQuote.author}`;
+  }
+
+  // ================= LOAD ASSIGNMENTS =================
+  function loadAssignments() {
+    const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+    
+    const upcomingList = document.getElementById('upcoming-tasks');
+    const completedList = document.getElementById('completed-work');
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const upcoming = assignments.filter(a => a.status === 'pending' || a.status === 'overdue');
+    const completed = assignments.filter(a => a.status === 'done');
+    
+    // Display upcoming assignments
+    if (upcoming.length > 0) {
+      upcomingList.innerHTML = upcoming.slice(0, 5).map(assignment => {
+        const dueDate = new Date(assignment.dueDate);
+        const formattedDate = dueDate.toLocaleDateString('en-GB');
+        return `
+          <li>
+            <div>
+              <strong>${assignment.name}</strong>
+              <div class="subject">${assignment.subject}</div>
+            </div>
+            <span class="date">${formattedDate}</span>
+          </li>
+        `;
+      }).join('');
+    } else {
+      upcomingList.innerHTML = '<li class="empty-state">No upcoming assignments</li>';
+    }
+    
+    // Display completed assignments
+    if (completed.length > 0) {
+      completedList.innerHTML = completed.slice(0, 5).map(assignment => {
+        return `
+          <li>
+            <div>
+              <strong>${assignment.name}</strong>
+              <div class="subject">${assignment.subject}</div>
+            </div>
+            <i class="fas fa-check-circle" style="color: #28a745;"></i>
+          </li>
+        `;
+      }).join('');
+    } else {
+      completedList.innerHTML = '<li class="empty-state">No completed assignments yet</li>';
+    }
+  }
+
+  // ================= LOAD STUDY SESSIONS =================
+  function loadStudySessions() {
+    const sessions = JSON.parse(localStorage.getItem('studySessions')) || [];
+    const sessionsList = document.getElementById('recent-sessions');
+    
+    if (sessions.length > 0) {
+      sessionsList.innerHTML = sessions.slice(-5).reverse().map(session => {
+        const date = new Date(session.date);
+        const formattedDate = date.toLocaleDateString('en-GB');
+        const hours = Math.floor(session.duration / 60);
+        const minutes = session.duration % 60;
+        const duration = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+        
+        return `
+          <li>
+            <div>
+              <strong>${session.subject}</strong>
+              <div class="subject">${session.chapter}</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="date">${formattedDate}</span>
+              <div class="subject">${duration}</div>
+            </div>
+          </li>
+        `;
+      }).join('');
+    } else {
+      sessionsList.innerHTML = '<li class="empty-state">No study sessions recorded</li>';
+    }
+  }
+
+  // ================= LOAD NOTIFICATIONS =================
+  function loadNotifications() {
+    const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+    const notificationList = document.getElementById('notification-list');
+    const notificationCount = document.getElementById('notification-count');
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const upcoming = assignments.filter(a => {
+      if (a.status !== 'pending' && a.status !== 'overdue') return false;
+      const dueDate = new Date(a.dueDate);
+      dueDate.setHours(0, 0, 0, 0);
+      const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+      return daysUntilDue <= 7 && daysUntilDue >= 0;
+    }).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    
+    if (upcoming.length > 0) {
+      notificationCount.textContent = upcoming.length;
+      notificationCount.style.display = 'block';
+      
+      notificationList.innerHTML = upcoming.map(assignment => {
+        const dueDate = new Date(assignment.dueDate);
+        const formattedDate = dueDate.toLocaleDateString('en-GB');
+        const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+        
+        let urgencyText = '';
+        if (daysUntilDue === 0) urgencyText = 'Due Today!';
+        else if (daysUntilDue === 1) urgencyText = 'Due Tomorrow';
+        else urgencyText = `Due in ${daysUntilDue} days`;
+        
+        return `
+          <div class="dropdown-item">
+            <strong>${assignment.name}</strong><br>
+            <small>${assignment.subject}</small><br>
+            <small class="text-danger"><i class="fas fa-calendar"></i> ${urgencyText} - ${formattedDate}</small>
+          </div>
+        `;
+      }).join('');
+    } else {
+      notificationCount.style.display = 'none';
+      notificationList.innerHTML = '<div class="dropdown-item text-center text-muted">No upcoming deadlines</div>';
+    }
+  }
+
+  // ================= INITIALIZE PAGE =================
+  // Initialize slideshow immediately when DOM is ready
+  document.addEventListener('DOMContentLoaded', function() {
+    // Show first slide immediately
+    const slides = document.getElementsByClassName("slide");
+    const dots = document.getElementsByClassName("dot");
+    if (slides.length > 0) {
+      slides[0].classList.add("active");
+      dots[0].classList.add("active");
+      slideIndex = 1;
+    }
+    
+    // Start automatic slideshow
+    slideTimer = setTimeout(showSlides, 4000);
+    
+    // Load other content
+    displayRandomQuote();
+    loadAssignments();
+    loadStudySessions();
+    loadNotifications();
+    
+    // Refresh data every 60 seconds
+    setInterval(() => {
+      loadAssignments();
+      loadStudySessions();
+      loadNotifications();
+    }, 60000);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revision Log - Study Dashboard</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="logStyle.css">
+</head>
+
+<body>
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-container">
+    <!-- BRAND NAME -->
+    <a href="HomePage.html" class="nav-brand">TaskBuddy</a>
+
+    <!-- NAVIGATION LINKS -->
+    <div class="nav-links">
+      <a href="HomePage.html" class="nav-link">Home</a>
+      <a href="assignmentmanager.html" class="nav-link">Assignments</a>
+      <a href="studyPage.html" class="nav-link">Study Session</a>
+      <a href="RevisionLog.html" class="nav-link">Revision Log</a>
+      <a href="aboutus.html" class="nav-link">About Us</a>
+    </div>
+
+    <!-- BELL ICON with Bootstrap Dropdown -->
+    <div class="notification dropdown">
+      <i class="fa-solid fa-bell" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false"></i>
+      <span class="badge" id="notification-count">0</span>
+      
+      <ul class="dropdown-menu dropdown-menu-end" id="notification-dropdown">
+        <li class="dropdown-item-text text-center fw-bold" style="color: #ff69b4;">
+          <i class="fas fa-bell"></i> Notifications
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li id="notification-list">
+          <div class="dropdown-item text-center text-muted">No upcoming deadlines</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <div class="log-container">
+    <header>
+      <h1>REVISION LOG</h1>
+      <p>Track your study sessions and progress over time.</p>
+    </header>
+
+    <!-- STATS SECTION -->
+    <div class="stats-section">
+      <div class="stat-card">
+        <div class="stat-value" id="total-sessions">0</div>
+        <div class="stat-label">Total Sessions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="total-hours">0h</div>
+        <div class="stat-label">Total Hours</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avg-duration">0m</div>
+        <div class="stat-label">Avg Duration</div>
+      </div>
+    </div>
+
+    <!-- TABLE SECTION -->
+    <div class="table-section">
+      <h2><i class="fas fa-history"></i> SESSION HISTORY</h2>
+      
+      <div id="table-container">
+        <table class="revision-table">
+          <thead>
+            <tr>
+              <th><i class="fas fa-calendar"></i> Date</th>
+              <th><i class="fas fa-book"></i> Subject</th>
+              <th><i class="fas fa-bookmark"></i> Chapter</th>
+              <th><i class="fas fa-clock"></i> Duration</th>
+              <th><i class="fas fa-file"></i> Notes</th>
+              <th><i class="fas fa-cog"></i> Actions</th>
+            </tr>
+          </thead>
+          <tbody id="logBody">
+          </tbody>
+        </table>
+        <div id="emptyMessage" class="empty-state"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    Give us your feedback
+    <a href="mailto:eashenraj256@gmail.com">here!</a>
+  </p>
+  <p>&copy; 2026 Study Dashboard. All rights reserved.</p>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+<!-- JAVASCRIPT -->
+<script>
+// Load notifications
+function loadNotifications() {
+  const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+  const notificationList = document.getElementById('notification-list');
+  const notificationCount = document.getElementById('notification-count');
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const upcoming = assignments.filter(a => {
+    if (a.status !== 'pending' && a.status !== 'overdue') return false;
+    const dueDate = new Date(a.dueDate);
+    dueDate.setHours(0, 0, 0, 0);
+    const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+    return daysUntilDue <= 7 && daysUntilDue >= 0;
+  }).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+  
+  if (upcoming.length > 0) {
+    notificationCount.textContent = upcoming.length;
+    notificationCount.style.display = 'block';
+    
+    notificationList.innerHTML = upcoming.map(assignment => {
+      const dueDate = new Date(assignment.dueDate);
+      const formattedDate = dueDate.toLocaleDateString('en-GB');
+      const daysUntilDue = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+      
+      let urgencyText = '';
+      if (daysUntilDue === 0) urgencyText = 'Due Today!';
+      else if (daysUntilDue === 1) urgencyText = 'Due Tomorrow';
+      else urgencyText = `Due in ${daysUntilDue} days`;
+      
+      return `
+        <div class="dropdown-item">
+          <strong>${assignment.name}</strong><br>
+          <small>${assignment.subject}</small><br>
+          <small class="text-danger"><i class="fas fa-calendar"></i> ${urgencyText} - ${formattedDate}</small>
+        </div>
+      `;
+    }).join('');
+  } else {
+    notificationCount.style.display = 'none';
+    notificationList.innerHTML = '<div class="dropdown-item text-center text-muted">No upcoming deadlines</div>';
+  }
+}
+
+// Load and display revision logs
+function loadRevisionLogs() {
+  const logs = JSON.parse(localStorage.getItem("studySessions")) || [];
+  const logBody = document.getElementById("logBody");
+  const emptyMessage = document.getElementById("emptyMessage");
+  const totalSessionsEl = document.getElementById("total-sessions");
+  const totalHoursEl = document.getElementById("total-hours");
+  const avgDurationEl = document.getElementById("avg-duration");
+
+  if (logs.length === 0) {
+    emptyMessage.innerHTML = '<i class="fas fa-folder-open"></i><br>No study sessions recorded yet.';
+    logBody.innerHTML = '';
+    totalSessionsEl.textContent = '0';
+    totalHoursEl.textContent = '0h';
+    avgDurationEl.textContent = '0m';
+  } else {
+    emptyMessage.innerHTML = '';
+    
+    // Calculate statistics
+    let totalMinutes = 0;
+    logs.forEach(log => {
+      totalMinutes += log.duration || 0;
+    });
+    
+    const totalHours = Math.floor(totalMinutes / 60);
+    const remainingMinutes = totalMinutes % 60;
+    const avgMinutes = Math.round(totalMinutes / logs.length);
+    
+    totalSessionsEl.textContent = logs.length;
+    totalHoursEl.textContent = totalHours > 0 ? `${totalHours}h ${remainingMinutes}m` : `${remainingMinutes}m`;
+    avgDurationEl.textContent = avgMinutes >= 60 ? `${Math.floor(avgMinutes/60)}h ${avgMinutes%60}m` : `${avgMinutes}m`;
+    
+    // Display logs in reverse order (most recent first)
+    logBody.innerHTML = logs.slice().reverse().map((log, index) => {
+      const date = new Date(log.date);
+      const formattedDate = date.toLocaleDateString('en-GB');
+      const hours = Math.floor(log.duration / 60);
+      const minutes = log.duration % 60;
+      const duration = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+      
+      const hasNotes = log.notes && log.notes.data;
+      const notesCell = hasNotes 
+        ? `<button class="download-btn" onclick="downloadNote('${log.id}')">
+             <i class="fas fa-download"></i> Download
+           </button>`
+        : `<span style="color: #999; font-style: italic; font-size: 0.85rem;">No notes</span>`;
+      
+      return `
+        <tr>
+          <td class="date-cell"><i class="fas fa-calendar-day"></i> ${formattedDate}</td>
+          <td class="subject-cell">${log.subject}</td>
+          <td class="chapter-cell">${log.chapter}</td>
+          <td class="duration-cell"><i class="fas fa-hourglass-half duration-icon"></i>${duration}</td>
+          <td style="text-align: center;">${notesCell}</td>
+          <td style="text-align: center;">
+            <button class="delete-btn" onclick="deleteSession('${log.id}')">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+}
+
+// Initialize page
+loadNotifications();
+loadRevisionLogs();
+
+// Refresh data every 60 seconds
+setInterval(() => {
+  loadNotifications();
+  loadRevisionLogs();
+}, 60000);
+
+// Download note function
+function downloadNote(sessionId) {
+  const sessions = JSON.parse(localStorage.getItem("studySessions")) || [];
+  const session = sessions.find(s => s.id === sessionId);
+  
+  if (session && session.notes && session.notes.data) {
+    const link = document.createElement('a');
+    link.href = session.notes.data;
+    link.download = session.notes.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    alert('No notes available for this session.');
+  }
+}
+
+// Delete session function
+function deleteSession(sessionId) {
+  // Show confirmation dialog
+  const confirmDelete = confirm('Are you sure you want to delete this study session? This action cannot be undone.');
+  
+  if (!confirmDelete) {
+    return;
+  }
+  
+  // Get current sessions
+  let sessions = JSON.parse(localStorage.getItem("studySessions")) || [];
+  
+  // Find the session to show details in confirmation
+  const sessionToDelete = sessions.find(s => s.id === sessionId);
+  
+  if (!sessionToDelete) {
+    alert('Session not found.');
+    return;
+  }
+  
+  // Filter out the session to delete
+  sessions = sessions.filter(s => s.id !== sessionId);
+  
+  // Save back to localStorage
+  localStorage.setItem("studySessions", JSON.stringify(sessions));
+  
+  // Reload the logs to update the display
+  loadRevisionLogs();
+  
+  // Show success message
+  alert('Study session deleted successfully!');
+}
+</script>
+
+</body>
+</html>

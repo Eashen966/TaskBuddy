@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="registerStyle.css">
+
+</head>
+<body>
+    <div class="container">
+        <h1>SIGN UP</h1>
+        <div class="form-wrapper">
+            <form id="signupForm">
+                <div class="input-group">
+                    <input type="text" placeholder="NAME" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" placeholder="EMAIL" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="PASSWORD" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="CONFIRM PASSWORD" required>
+                </div>
+                <button type="submit" class="submit-btn">SIGN UP</button>
+                <div class="login-link">
+                    ALREADY HAVE AN ACCOUNT? <a href="index.html">LOGIN</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Sign up successful!');
+        });
+    </script>
+</body>
+</html>
